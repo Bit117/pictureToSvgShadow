@@ -1,8 +1,8 @@
-# PNG to SVG Shadow Extractor
+# Image to SVG Shadow Extractor
 
 A simple Python command-line tool that extracts the silhouette ("shadow")
-from a PNG image and outputs a corresponding SVG file with the region
-filled in black and the rest left transparent.
+from any raster image (PNG, JPEG, WEBP, etc.) and outputs a corresponding
+SVG file with the region filled in black and the rest left transparent.
 
 ## Features
 
@@ -23,6 +23,8 @@ pip install -r requirements.txt
 
 ```bash
 python extract_shadow.py example.png shadow.svg
+python extract_shadow.py example.jpg shadow.svg
+python extract_shadow.py example.webp shadow.svg
 ```
 
 You can then open `shadow.svg` in any viewer; the black shape represents
@@ -31,8 +33,9 @@ the filled shadow, and the remainder will be transparent.
 ## Notes
 
 - The tool currently looks for the external contour(s) of opaque
-  regions. If you need more advanced edge detection (e.g. for smooth
-  gradients), you can preprocess the image or modify the script.
+  or non‑black regions. If you need more advanced edge detection (e.g.
+  for smooth gradients), you can preprocess the image or modify the
+  script.
 
 - Further enhancements might include exporting one path per connected
   component, smoothing the path, or using a vectorization library like

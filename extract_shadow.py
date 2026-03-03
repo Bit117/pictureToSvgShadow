@@ -1,16 +1,21 @@
-"""Convert a PNG image into a silhouette SVG.
+"""Convert a raster image into a silhouette SVG.
 
-This script reads a PNG, detects the opaque region (or the subject),
+This script reads any image file that OpenCV can decode (PNG, JPEG,
+WEBP, etc.), detects the opaque or non‑black region (the subject),
 creates a filled black mask of that region and writes an SVG containing
 one or more <path> elements. Everything outside the silhouette is
 transparent when rendered by an SVG viewer.
 
 Usage:
     python extract_shadow.py input.png output.svg
+    python extract_shadow.py input.jpg output.svg
+    python extract_shadow.py input.webp output.svg
 
 Dependencies are listed in requirements.txt and can be installed with
 `pip install -r requirements.txt`.
 """
+# author: 2026-03-03 by dong
+
 
 import sys
 import cv2
@@ -18,7 +23,15 @@ import numpy as np
 import svgwrite
 
 
-def png_to_svg_shadow(input_path: str, output_path: str) -> None:
+def image_to_svg_shadow(input_path: str, output_path: str) -> None:
+    """Load **any** supported raster image and write a silhouette SVG.
+
+    The behavior is the same as the original ``png_to_svg_shadow`` but
+    the name and documentation have been generalized because OpenCV
+    already handles dozens of common formats. If the image contains an
+    alpha channel it is used to determine the subject; otherwise a
+    simple brightness threshold is applied to the grayscale version.
+    """
     # read image (preserve alpha if present)
     img = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
     if img is None:
@@ -64,15 +77,20 @@ def png_to_svg_shadow(input_path: str, output_path: str) -> None:
     dwg.save()
 
 
+# backwards compatibility: original name kept as alias
+png_to_svg_shadow = image_to_svg_shadow
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python extract_shadow.py <input.png> <output.svg>")
+        print("Usage: python extract_shadow.py <input-image> <output.svg>")
         sys.exit(1)
 
     inp, outp = sys.argv[1], sys.argv[2]
     try:
-        png_to_svg_shadow(inp, outp)
+        image_to_svg_shadow(inp, outp)
         print(f"wrote silhouette SVG to {outp}")
     except Exception as exc:
         print("error:", exc)
         sys.exit(2)
+
